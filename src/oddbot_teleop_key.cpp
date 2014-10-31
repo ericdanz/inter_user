@@ -139,20 +139,36 @@ void OddbotTeleop::keyLoop()
     switch(c)
     {
       case DRIVE_L:
-        ROS_DEBUG("LEFT");
+        ROS_DEBUG("DRIVE LEFT");
         angular_ = 1.0;
         break;
       case DRIVE_R:
-        ROS_DEBUG("RIGHT");
+        ROS_DEBUG("DRIVE RIGHT");
         angular_ = -1.0;
         break;
       case DRIVE_U:
-        ROS_DEBUG("UP");
+        ROS_DEBUG("DRIVE UP");
         linear_ = 1.0;
         break;
       case DRIVE_D:
-        ROS_DEBUG("DOWN");
+        ROS_DEBUG("DRIVE DOWN");
         linear_ = -1.0;
+        break;
+      case PAN_L:
+        ROS_DEBUG("PAN LEFT");
+        //DO SOMETHING
+        break;
+      case PAN_R:
+        ROS_DEBUG("PAN RIGHT");
+        //DO SOMETHING
+        break;
+      case TILT_U:
+        ROS_DEBUG("TILT UP");
+        //DO SOMETHING
+        break;
+      case TILT_D:
+        ROS_DEBUG("TILT DOWN");
+        //DO SOMETHING
         break;
     }
     boost::mutex::scoped_lock lock(publish_mutex_);

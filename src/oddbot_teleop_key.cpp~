@@ -11,7 +11,7 @@
 #define DRIVE_R 0x64
 //A key
 #define DRIVE_L 0x61
-//U key
+//W key
 #define DRIVE_U 0x77
 //S key
 #define DRIVE_D 0x73
@@ -139,19 +139,35 @@ void OddbotTeleop::keyLoop()
     switch(c)
     {
       case DRIVE_L:
-        ROS_DEBUG("LEFT");
+        ROS_DEBUG("DRIVE LEFT");
         angular_ = 1.0;
         break;
       case DRIVE_R:
-        ROS_DEBUG("RIGHT");
+        ROS_DEBUG("DRIVE RIGHT");
         angular_ = -1.0;
         break;
       case DRIVE_U:
-        ROS_DEBUG("UP");
+        ROS_DEBUG("DRIVE UP");
         linear_ = 1.0;
         break;
       case DRIVE_D:
-        ROS_DEBUG("DOWN");
+        ROS_DEBUG("DRIVE DOWN");
+        linear_ = -1.0;
+        break;
+      case PAN_L:
+        ROS_DEBUG("PAN LEFT");
+        linear_ = -1.0;
+        break;
+      case PAN_R:
+        ROS_DEBUG("PAN RIGHT");
+        linear_ = -1.0;
+        break;
+      case TILT_U:
+        ROS_DEBUG("TILT UP");
+        linear_ = -1.0;
+        break;
+      case TILT_D:
+        ROS_DEBUG("TILT DOWN");
         linear_ = -1.0;
         break;
     }
