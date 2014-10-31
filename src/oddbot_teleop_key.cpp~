@@ -1,4 +1,4 @@
-
+//From turtlebot teleop 
 #include <ros/ros.h>
 #include <geometry_msgs/Twist.h>
 #include <signal.h>
@@ -7,11 +7,27 @@
 #include "boost/thread/mutex.hpp"
 #include "boost/thread/thread.hpp"
 
-#define KEYCODE_R 0x43 
-#define KEYCODE_L 0x44
-#define KEYCODE_U 0x41
-#define KEYCODE_D 0x42
-#define KEYCODE_Q 0x71
+//D key
+#define DRIVE_R 0x64
+//A key
+#define DRIVE_L 0x61
+//U key
+#define DRIVE_U 0x77
+//S key
+#define DRIVE_D 0x73
+//ESC key
+#define KEYCODE_Q 0x1B
+
+
+//Right key
+#define PAN_R 0x43
+//Left key
+#define PAN_L 0x44
+//Up key
+#define TILT_U 0x41
+//Down key
+#define TILT_D 0x42
+
 
 class OddbotTeleop
 {
@@ -122,19 +138,19 @@ void OddbotTeleop::keyLoop()
   
     switch(c)
     {
-      case KEYCODE_L:
+      case DRIVE_L:
         ROS_DEBUG("LEFT");
         angular_ = 1.0;
         break;
-      case KEYCODE_R:
+      case DRIVE_R:
         ROS_DEBUG("RIGHT");
         angular_ = -1.0;
         break;
-      case KEYCODE_U:
+      case DRIVE_U:
         ROS_DEBUG("UP");
         linear_ = 1.0;
         break;
-      case KEYCODE_D:
+      case DRIVE_D:
         ROS_DEBUG("DOWN");
         linear_ = -1.0;
         break;
