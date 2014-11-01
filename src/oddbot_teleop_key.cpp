@@ -101,7 +101,7 @@ void OddbotTeleop::watchdog()
   boost::mutex::scoped_lock lock(publish_mutex_);
   if ((ros::Time::now() > last_publish_ + ros::Duration(0.15)) && 
       (ros::Time::now() > first_publish_ + ros::Duration(0.50)))
-    publish(0, 0);
+    publish(0, 128);
 }
 
 void OddbotTeleop::keyLoop()
@@ -133,7 +133,8 @@ void OddbotTeleop::keyLoop()
     }
 
 
-    linear_=angular_=0;
+    linear_=128;
+    angular_=0;
     ROS_DEBUG("value: 0x%02X\n", c);
   
     switch(c)
@@ -148,11 +149,11 @@ void OddbotTeleop::keyLoop()
         break;
       case DRIVE_U:
         ROS_DEBUG("DRIVE UP");
-        linear_ = 1.0;
+        linear_ = 250.0;
         break;
       case DRIVE_D:
         ROS_DEBUG("DRIVE DOWN");
-        linear_ = -1.0;
+        linear_ = 0.0;
         break;
       case PAN_L:
         ROS_DEBUG("PAN LEFT");
