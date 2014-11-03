@@ -1,6 +1,7 @@
 //From turtlebot teleop 
 #include <ros/ros.h>
 #include <geometry_msgs/Twist.h>
+#include <std_msgs/Int32.h>
 #include <signal.h>
 #include <termios.h>
 #include <stdio.h>
@@ -16,7 +17,7 @@
 //S key
 #define DRIVE_D 0x73
 //ESC key
-#define KEYCODE_Q 0x1B
+#define KEYCODE_Q 0x0A
 
 
 //Right key
@@ -45,6 +46,8 @@ private:
   ros::Time last_publish_;
   double l_scale_, a_scale_;
   ros::Publisher vel_pub_;
+  ros::Publisher pan_pub_;
+  ros::Publisher tilt_pub_;
   void publish(double, double);
   boost::mutex publish_mutex_;
 
@@ -61,6 +64,8 @@ OddbotTeleop::OddbotTeleop():
   ph_.param("scale_linear", l_scale_, l_scale_);
 
   vel_pub_ = nh_.advertise<geometry_msgs::Twist>("cmd_vel", 1);
+  pan_pub_ = nh_.advertise<std_msgs::Int32>("pan", 1);
+  tilt_pub_ = nh_.advertise<std_msgs::Int32>("tilt", 1);
 }
 
 int kfd = 0;
@@ -101,14 +106,18 @@ void OddbotTeleop::watchdog()
   boost::mutex::scoped_lock lock(publish_mutex_);
   if ((ros::Time::now() > last_publish_ + ros::Duration(0.15)) && 
       (ros::Time::now() > first_publish_ + ros::Duration(0.50)))
-    publish(0, 128);
+    publish(128, 128);
 }
 
 void OddbotTeleop::keyLoop()
 {
   char c;
 
+  std_msgs::Int32 pan_msg;
+  std_msgs::Int32 tilt_msg;
 
+  pan_msg.data = 0;
+  tilt_msg.data = 0;
   // get the console in raw mode                                                              
   tcgetattr(kfd, &cooked);
   memcpy(&raw, &cooked, sizeof(struct termios));
@@ -133,22 +142,23 @@ void OddbotTeleop::keyLoop()
     }
 
 
-    linear_=angular_=0;
+    linear_=128;
+    angular_=128;
     ROS_DEBUG("value: 0x%02X\n", c);
   
     switch(c)
     {
       case DRIVE_L:
         ROS_DEBUG("DRIVE LEFT");
-        angular_ = 1.0;
+        angular_ = 255.0;
         break;
       case DRIVE_R:
         ROS_DEBUG("DRIVE RIGHT");
-        angular_ = -1.0;
+        angular_ = 0.0;
         break;
       case DRIVE_U:
         ROS_DEBUG("DRIVE UP");
-        linear_ = 250.0;
+        linear_ = 255.0;
         break;
       case DRIVE_D:
         ROS_DEBUG("DRIVE DOWN");
@@ -156,19 +166,23 @@ void OddbotTeleop::keyLoop()
         break;
       case PAN_L:
         ROS_DEBUG("PAN LEFT");
-        //DO SOMETHING
+        pan_msg.data -= 1;
+        pan_pub_.publish(pan_msg);
         break;
       case PAN_R:
         ROS_DEBUG("PAN RIGHT");
-        //DO SOMETHING
+        pan_msg.data += 1;
+        pan_pub_.publish(pan_msg);
         break;
       case TILT_U:
         ROS_DEBUG("TILT UP");
-        //DO SOMETHING
+        tilt_msg.data -= 1;
+        tilt_pub_.publish(tilt_msg);
         break;
       case TILT_D:
         ROS_DEBUG("TILT DOWN");
-        //DO SOMETHING
+        tilt_msg.data += 1;
+        tilt_pub_.publish(tilt_msg);
         break;
     }
     boost::mutex::scoped_lock lock(publish_mutex_);
