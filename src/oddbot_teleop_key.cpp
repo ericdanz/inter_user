@@ -1,7 +1,7 @@
 //From turtlebot teleop 
 #include <ros/ros.h>
 #include <geometry_msgs/Twist.h>
-#include <std_msgs/Int32.h>
+#include <oddbot_msgs/HerkulexCommand.h>
 #include <signal.h>
 #include <termios.h>
 #include <stdio.h>
@@ -46,8 +46,7 @@ private:
   ros::Time last_publish_;
   double l_scale_, a_scale_;
   ros::Publisher vel_pub_;
-  ros::Publisher pan_pub_;
-  ros::Publisher tilt_pub_;
+  ros::Publisher pan_tilt_pub_;
   void publish(double, double);
   boost::mutex publish_mutex_;
 
@@ -64,8 +63,7 @@ OddbotTeleop::OddbotTeleop():
   ph_.param("scale_linear", l_scale_, l_scale_);
 
   vel_pub_ = nh_.advertise<geometry_msgs::Twist>("cmd_vel", 1);
-  pan_pub_ = nh_.advertise<std_msgs::Int32>("pan", 1);
-  tilt_pub_ = nh_.advertise<std_msgs::Int32>("tilt", 1);
+  pan_tilt_pub_ = nh_.advertise<std_msgs::Int32>("herkulex_command", 1);
 }
 
 int kfd = 0;
@@ -89,7 +87,6 @@ int main(int argc, char** argv)
 
   boost::thread my_thread(boost::bind(&OddbotTeleop::keyLoop, &oddbot_teleop));
   
-  
   ros::Timer timer = n.createTimer(ros::Duration(0.1), boost::bind(&OddbotTeleop::watchdog, &oddbot_teleop));
 
   ros::spin();
@@ -112,12 +109,9 @@ void OddbotTeleop::watchdog()
 void OddbotTeleop::keyLoop()
 {
   char c;
-
-  std_msgs::Int32 pan_msg;
-  std_msgs::Int32 tilt_msg;
-
-  pan_msg.data = 0;
-  tilt_msg.data = 0;
+  oddbot_msgs::HerkulexCommand pt_msg;
+  pt_msg.name = [1,2];
+  pt_msg.position = [0.0,0.0];
   // get the console in raw mode                                                              
   tcgetattr(kfd, &cooked);
   memcpy(&raw, &cooked, sizeof(struct termios));
@@ -150,40 +144,40 @@ void OddbotTeleop::keyLoop()
     {
       case DRIVE_L:
         ROS_DEBUG("DRIVE LEFT");
-        angular_ = 255.0;
+        angular_ = 175.0;
         break;
       case DRIVE_R:
         ROS_DEBUG("DRIVE RIGHT");
-        angular_ = 0.0;
+        angular_ = 80.0;
         break;
       case DRIVE_U:
         ROS_DEBUG("DRIVE UP");
-        linear_ = 255.0;
+        linear_ = 175.0;
         break;
       case DRIVE_D:
         ROS_DEBUG("DRIVE DOWN");
-        linear_ = 0.0;
+        linear_ = 80.0;
         break;
       case PAN_L:
         ROS_DEBUG("PAN LEFT");
         //might need some time stuff for debouncing
-        pan_msg.data -= 1;
-        pan_pub_.publish(pan_msg);
+        pt_msg.position[2] -= 1;
+        pan_tilt_pub_.publish(pt_msg);
         break;
       case PAN_R:
         ROS_DEBUG("PAN RIGHT");
-        pan_msg.data += 1;
-        pan_pub_.publish(pan_msg);
+        pt_msg.position[2] += 1;
+        pan_tilt_pub_.publish(pt_msg);
         break;
       case TILT_U:
         ROS_DEBUG("TILT UP");
-        tilt_msg.data -= 1;
-        tilt_pub_.publish(tilt_msg);
+        pt_msg.position[1] -= 1;
+        pan_tilt_pub_.publish(pt_msg);
         break;
       case TILT_D:
         ROS_DEBUG("TILT DOWN");
-        tilt_msg.data += 1;
-        tilt_pub_.publish(tilt_msg);
+        pt_msg.position[1] += 1;
+        pan_tilt_pub_.publish(pt_msg);
         break;
     }
     boost::mutex::scoped_lock lock(publish_mutex_);
