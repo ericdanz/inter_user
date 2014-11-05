@@ -63,7 +63,7 @@ OddbotTeleop::OddbotTeleop():
   ph_.param("scale_linear", l_scale_, l_scale_);
 
   vel_pub_ = nh_.advertise<geometry_msgs::Twist>("cmd_vel", 1);
-  pan_tilt_pub_ = nh_.advertise<std_msgs::Int32>("herkulex_command", 1);
+  pan_tilt_pub_ = nh_.advertise<oddbot_msgs::HerkulexCommand>("perce_herkulex_command", 1);
 }
 
 int kfd = 0;
@@ -110,8 +110,10 @@ void OddbotTeleop::keyLoop()
 {
   char c;
   oddbot_msgs::HerkulexCommand pt_msg;
-  pt_msg.name = [1,2];
-  pt_msg.position = [0.0,0.0];
+  pt_msg.name.push_back(1);
+  pt_msg.name.push_back(2);
+  pt_msg.position.push_back(0.0);
+  pt_msg.position.push_back(0.0);
   // get the console in raw mode                                                              
   tcgetattr(kfd, &cooked);
   memcpy(&raw, &cooked, sizeof(struct termios));
@@ -123,7 +125,8 @@ void OddbotTeleop::keyLoop()
 
   puts("Reading from keyboard");
   puts("---------------------------");
-  puts("Use arrow keys to move the turtlebot.");
+  puts("Use wasd keys to move the oddbot.");
+  puts("Use arrow keys to move the kinect.");
 
 
   while (ros::ok())
@@ -161,22 +164,22 @@ void OddbotTeleop::keyLoop()
       case PAN_L:
         ROS_DEBUG("PAN LEFT");
         //might need some time stuff for debouncing
-        pt_msg.position[2] -= 1;
+        pt_msg.position[0] -= 0.09;
         pan_tilt_pub_.publish(pt_msg);
         break;
       case PAN_R:
         ROS_DEBUG("PAN RIGHT");
-        pt_msg.position[2] += 1;
+        pt_msg.position[0] += 0.09;
         pan_tilt_pub_.publish(pt_msg);
         break;
       case TILT_U:
         ROS_DEBUG("TILT UP");
-        pt_msg.position[1] -= 1;
+        pt_msg.position[1] -= 0.09;
         pan_tilt_pub_.publish(pt_msg);
         break;
       case TILT_D:
         ROS_DEBUG("TILT DOWN");
-        pt_msg.position[1] += 1;
+        pt_msg.position[1] += 0.09;
         pan_tilt_pub_.publish(pt_msg);
         break;
     }
