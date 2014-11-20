@@ -1,6 +1,7 @@
 //From turtlebot teleop 
 #include <ros/ros.h>
 #include <geometry_msgs/Twist.h>
+#include <std_msgs/Int32.h>
 #include <oddbot_msgs/HerkulexCommand.h>
 #include <signal.h>
 #include <termios.h>
@@ -38,14 +39,15 @@ public:
   void watchdog();
 
 private:
-
   
+
   ros::NodeHandle nh_,ph_;
   double linear_, angular_;
   ros::Time first_publish_;
   ros::Time last_publish_;
   double l_scale_, a_scale_;
   ros::Publisher vel_pub_;
+  ros::Publisher vel_mode_pub_;
   ros::Publisher pan_tilt_pub_;
   void publish(double, double);
   boost::mutex publish_mutex_;
@@ -63,7 +65,10 @@ OddbotTeleop::OddbotTeleop():
   ph_.param("scale_linear", l_scale_, l_scale_);
 
   vel_pub_ = nh_.advertise<geometry_msgs::Twist>("cmd_vel", 1);
+
   pan_tilt_pub_ = nh_.advertise<oddbot_msgs::HerkulexCommand>("perce_herkulex_command", 1);
+  //locomotion needs to listen to cmd_vel
+  vel_mode_pub_ = nh_.advertise<std_msgs::Int32>("locomotion_mode", 1);
 }
 
 int kfd = 0;
@@ -82,7 +87,10 @@ int main(int argc, char** argv)
   ros::init(argc, argv, "oddbot_teleop");
   OddbotTeleop oddbot_teleop;
   ros::NodeHandle n;
+  //So that the locomotion module knows to listen to cmd_vel
 
+
+  
   signal(SIGINT,quit);
 
   boost::thread my_thread(boost::bind(&OddbotTeleop::keyLoop, &oddbot_teleop));
@@ -147,19 +155,19 @@ void OddbotTeleop::keyLoop()
     {
       case DRIVE_L:
         ROS_DEBUG("DRIVE LEFT");
-        angular_ = 175.0;
+        angular_ = 150.0;
         break;
       case DRIVE_R:
         ROS_DEBUG("DRIVE RIGHT");
-        angular_ = 80.0;
+        angular_ = 106.0;
         break;
       case DRIVE_U:
         ROS_DEBUG("DRIVE UP");
-        linear_ = 175.0;
+        linear_ = 150.0;
         break;
       case DRIVE_D:
         ROS_DEBUG("DRIVE DOWN");
-        linear_ = 80.0;
+        linear_ = 106.0;
         break;
       case PAN_L:
         ROS_DEBUG("PAN LEFT");
@@ -202,6 +210,9 @@ void OddbotTeleop::publish(double angular, double linear)
 
     vel_pub_.publish(vel);    
 
+    std_msgs::Int32 vel_mode;
+    vel_mode.data = 1;
+    vel_mode_pub_.publish(vel_mode);
 
   return;
 }
