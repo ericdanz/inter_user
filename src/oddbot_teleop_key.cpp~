@@ -155,19 +155,19 @@ void OddbotTeleop::keyLoop()
     {
       case DRIVE_L:
         ROS_DEBUG("DRIVE LEFT");
-        angular_ = 0.2;
+        angular_ = 0.1;
         break;
       case DRIVE_R:
         ROS_DEBUG("DRIVE RIGHT");
-        angular_ = -0.2;
+        angular_ = -0.1;
         break;
       case DRIVE_U:
         ROS_DEBUG("DRIVE UP");
-        linear_ = 0.3;
+        linear_ = 0.2;
         break;
       case DRIVE_D:
         ROS_DEBUG("DRIVE DOWN");
-        linear_ = -0.3;
+        linear_ = -0.2;
         break;
       case PAN_L:
         ROS_DEBUG("PAN LEFT");
