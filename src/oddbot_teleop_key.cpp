@@ -163,21 +163,21 @@ void OddbotTeleop::keyLoop()
         break;
       case DRIVE_U:
         ROS_DEBUG("DRIVE UP");
-        linear_ = 0.3;
+        linear_ = -0.15;
         break;
       case DRIVE_D:
         ROS_DEBUG("DRIVE DOWN");
-        linear_ = -0.3;
+        linear_ = 0.15;
         break;
       case PAN_L:
         ROS_DEBUG("PAN LEFT");
         //might need some time stuff for debouncing
-        pt_msg.position[0] -= 0.09;
+        pt_msg.position[0] += 0.09;
         pan_tilt_pub_.publish(pt_msg);
         break;
       case PAN_R:
         ROS_DEBUG("PAN RIGHT");
-        pt_msg.position[0] += 0.09;
+        pt_msg.position[0] -= 0.09;
         pan_tilt_pub_.publish(pt_msg);
         break;
       case TILT_U:
