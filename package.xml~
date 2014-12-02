@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <package>
-  <name>locom_diff</name>
+  <name>inter_user</name>
   <version>0.0.0</version>
-  <description>The locom_diffs package</description>
+  <description>The user interface</description>
 
   <!-- One maintainer tag required, multiple allowed, one person per tag --> 
   <!-- Example:  -->
@@ -45,9 +45,13 @@
   <build_depend>std_msgs</build_depend>
   <build_depend>oddbot_msgs</build_depend>
   <build_depend>oddbot_lib</build_depend>
+  <build_depend>sensor_msgs</build_depend>
+  <build_depend>image_transport</build_depend>
   <run_depend>roscpp</run_depend>
   <run_depend>std_msgs</run_depend>
   <run_depend>oddbot_msgs</run_depend>
+  <run_depend>sensor_msgs</run_depend>
+  <run_depend>image_transport</run_depend>
 
 
   <!-- The export tag contains other, unspecified, tags -->

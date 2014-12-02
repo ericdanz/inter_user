@@ -7,10 +7,13 @@ project(inter_user)
 find_package(catkin REQUIRED COMPONENTS
   message_generation
   roscpp
+  sensor_msgs
   std_msgs
   genmsg
   oddbot_msgs
   oddbot_lib
+  image_transport
+  cv_bridge
 )
 
 ## System dependencies are found with CMake's conventions
@@ -83,7 +86,7 @@ find_package(catkin REQUIRED COMPONENTS
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-  INCLUDE_DIRS include
+#  INCLUDE_DIRS include
   LIBRARIES oddbot_lib
 #  CATKIN_DEPENDS message_generation roscpp std_msgs
 #  DEPENDS system_lib
@@ -96,7 +99,7 @@ catkin_package(
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 # include_directories(include)
-include_directories(include
+include_directories(
   ${catkin_INCLUDE_DIRS}
 )
 
@@ -108,6 +111,7 @@ include_directories(include
 
 ## Declare a cpp executable
 add_executable(oddbot_teleop_key src/oddbot_teleop_key.cpp)
+add_executable(compress_image src/compress_image.cpp)
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
@@ -115,6 +119,9 @@ add_executable(oddbot_teleop_key src/oddbot_teleop_key.cpp)
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(oddbot_teleop_key
+  ${catkin_LIBRARIES}
+)
+target_link_libraries(compress_image
   ${catkin_LIBRARIES}
 )
 
